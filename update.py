@@ -1,16 +1,26 @@
 """Test self-update methods."""
+from base64 import b64decode as decode
 import os
 import requests
 
+VERSION = 'v1.1'
 IS_WORKING = True
-URL = 'https://raw.githubusercontent.com/carter-lavering/self-update-tests/master/update.py'
+URL = 'http://api.github.com/repos/carter-lavering/self-update-tests/'
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 
+def releases():
+    """Return this repo's releases."""
+    response = requests.get(URL + 'releases')
+    return [x['tag_name'] for x in response.json()]
+
+
 def download():
-    """Download the latest version of this program from GitHub."""
-    response = requests.get(URL)
-    return response.text
+    """Return the latest version of this program from GitHub."""
+    response = requests.get(URL + 'contents/update.py')
+    encoded = response.json()['content']
+    decoded = str(decode(encoded), 'utf-8')
+    return decoded
 
 
 def replace_with(code):
@@ -22,6 +32,8 @@ def replace_with(code):
 def main():
     """Download the latest version and replace this current file with it."""
     replace_with(download())
+    print(download())
+    # print('\n'.join(releases()))
 
 if __name__ == '__main__':
     main()
