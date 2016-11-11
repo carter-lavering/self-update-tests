@@ -3,16 +3,24 @@ from base64 import b64decode as decode
 import os
 import requests
 
-VERSION = 'v1.1'
+__version__ = '1.2'
 IS_WORKING = True
 URL = 'http://api.github.com/repos/carter-lavering/self-update-tests/'
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def releases():
-    """Return this repo's releases."""
+def get_latest_release():
+    """Return this repo's latest release (excluding the "v" at the start)."""
     response = requests.get(URL + 'releases')
-    return [x['tag_name'] for x in response.json()]
+    releases = [x['tag_name'][1:] for x in response.json()]
+    latest_release = sorted(releases)[-1]
+    return latest_release
+
+
+def outdated():
+    """Determine whether the current program is outdated."""
+    latest_release = get_latest_release()
+    return __version__ < latest_release
 
 
 def download():
@@ -31,9 +39,8 @@ def replace_with(code):
 
 def main():
     """Download the latest version and replace this current file with it."""
-    replace_with(download())
-    print(download())
-    # print('\n'.join(releases()))
+    if outdated():
+        replace_with(download())
 
 if __name__ == '__main__':
     main()
