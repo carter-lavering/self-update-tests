@@ -2,7 +2,7 @@
 from base64 import b64decode as decode
 import requests
 
-__version__ = '1.3'
+__version__ = '1.3.1'
 URL = 'http://api.github.com/repos/carter-lavering/self-update-tests/'
 
 
@@ -26,7 +26,7 @@ def self_update():
 def main():
     """Download the latest version and replace this current file with it."""
     if is_outdated():
-        print('Updating...', end=' ')
+        print('Updating...', end=' ', flush=True)
         self_update()
         print('Done')
     else:
